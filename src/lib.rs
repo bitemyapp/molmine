@@ -1,5 +1,13 @@
 pub mod app;
+#[cfg(feature = "ssr")]
+pub mod db;
+#[cfg(feature = "ssr")]
+pub mod error;
+#[cfg(feature = "ssr")]
+pub mod models;
 pub mod pages;
+#[cfg(feature = "ssr")]
+pub mod schema;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
