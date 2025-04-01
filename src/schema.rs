@@ -1,36 +1,36 @@
 diesel::table! {
     compounds (id) {
-        id -> Nullable<Integer>,
-        pdf_id -> Nullable<Integer>,
-        smiles -> Nullable<Text>,
-        inchi -> Nullable<Text>,
-        image -> Nullable<Text>,
-        chemical_data -> Nullable<Text>,
+        id -> Integer,
+        pdf_id -> Integer,
+        smiles -> Text,
+        inchi -> Text,
+        image -> Text,
+        chemical_data -> Text,
     }
 }
 
 diesel::table! {
     pdfs (id) {
-        id -> Nullable<Integer>,
-        title -> Nullable<Text>,
-        authors -> Nullable<Text>,
-        year -> Nullable<Integer>,
-        journal -> Nullable<Text>,
-        volume -> Nullable<Text>,
-        data -> Nullable<Binary>,
+        id -> Integer,
+        title -> Text,
+        authors -> Text,
+        year -> Integer,
+        journal -> Text,
+        volume -> Text,
+        data -> Binary,
     }
 }
 
 diesel::table! {
     project_data (key) {
         key -> Nullable<Text>,
-        value -> Nullable<Text>,
+        value -> Text,
     }
 }
 
 diesel::table! {
     projects (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         name -> Text,
         path -> Text,
         created_at -> Nullable<Timestamp>,
