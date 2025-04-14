@@ -1,95 +1,104 @@
-use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
-use leptos_router::{
-    components::{Route, Router, Routes},
-    StaticSegment,
-};
+use leptos::ev::{MouseEvent, SubmitEvent};
+use leptos::*;
+use leptos::{prelude::*, task::spawn_local};
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::to_value;
+use wasm_bindgen::prelude::*;
 
-use crate::pages::*;
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
+    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+}
 
-pub fn shell(options: LeptosOptions) -> impl IntoView {
-    view! {
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-                <AutoReload options=options.clone() />
-                <HydrationScripts options/>
-                <MetaTags/>
-            </head>
-            <body>
-                <App/>
-            </body>
-        </html>
-    }
+#[derive(Serialize, Deserialize)]
+struct GreetArgs<'a> {
+    name: &'a str,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CounterArgs {
+    count: i32,
 }
 
 #[component]
 pub fn App() -> impl IntoView {
-    // Provides context that manages stylesheets, titles, meta tags, etc.
-    provide_meta_context();
-    // Signal to control modal visibility
-    let show_about_modal = RwSignal::new(false);
-    let close_about_modal = move |_| show_about_modal.set(false);
+    let (name, set_name) = signal(String::new());
+    let (greet_msg, set_greet_msg) = signal(String::new());
 
-    // Toggle function for the modal
-    let toggle_about_modal = move |_| {
-        println!("Toggling about modal visibility");
-        show_about_modal.update(|show| *show = !*show);
+    let (count, set_count) = signal(0);
+
+    let increase_me = move |ev: MouseEvent| {
+        ev.prevent_default();
+        spawn_local(async move {
+            let count = count.get_untracked();
+            let args = to_value(&CounterArgs { count }).unwrap();
+            let new_value = invoke("increase", args).await.as_f64().unwrap();
+            set_count.set(new_value as i32);
+        });
     };
 
-    // Inside your App component:
-    Effect::new(move |_| {
-        if show_about_modal.get() {
-            document()
-                .body()
-                .unwrap()
-                .class_list()
-                .add_1("modal-open")
-                .unwrap();
-        } else {
-            document()
-                .body()
-                .unwrap()
-                .class_list()
-                .remove_1("modal-open")
-                .unwrap();
-        }
-    });
-    view! {
-        // injects a stylesheet into the document <head>
-        // id=leptos means cargo-leptos will hot-reload this stylesheet
-        <Stylesheet id="leptos" href="/pkg/molmine.css"/>
+    let decrease_me = move |ev: MouseEvent| {
+        ev.prevent_default();
+        spawn_local(async move {
+            let count = count.get_untracked();
+            let args = to_value(&CounterArgs { count }).unwrap();
+            let new_value = invoke("decrease", args).await.as_f64().unwrap();
+            set_count.set(new_value as i32);
+        });
+    };
 
-        // sets the document title
-        <Title text="Welcome to Leptos"/>
-        <NavBar toggle_about_modal=Callback::new(move |()| toggle_about_modal(())) />
-        // Add the modal component here
-        <AboutModal
-            show=show_about_modal
-            on_close=Callback::new(move |()| close_about_modal(()))
-        />
-        // content for this welcome page
-        <Router>
-            <main>
-                <Routes fallback=|| "Page not found.".into_view()>
-                    <Route path=StaticSegment("") view=HomePage/>
-                    // <Route path=StaticSegment("about") view=AboutPage/>
-                </Routes>
-            </main>
-        </Router>
-    }
-}
+    let update_name = move |ev| {
+        let v = event_target_value(&ev);
+        set_name.set(v);
+    };
 
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
+    let greet = move |ev: SubmitEvent| {
+        ev.prevent_default();
+        spawn_local(async move {
+            let name = name.get_untracked();
+            if name.is_empty() {
+                return;
+            }
+
+            let args = serde_wasm_bindgen::to_value(&GreetArgs { name: &name }).unwrap();
+            // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+            let new_msg = invoke("greet", args).await.as_string().unwrap();
+            set_greet_msg.set(new_msg);
+        });
+    };
+
     view! {
-       <div></div>
+        <main class="container">
+            <h1>"Welcome to Tauri + Leptos"</h1>
+
+            <div class="row">
+                <a href="https://tauri.app" target="_blank">
+                    <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
+                </a>
+                <a href="https://docs.rs/leptos/" target="_blank">
+                    <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
+                </a>
+            </div>
+            <p>"Click on the Tauri and Leptos logos to learn more."</p>
+
+            <form class="row" on:submit=greet>
+                <input
+                    id="greet-input"
+                    placeholder="Enter a name..."
+                    on:input=update_name
+                />
+                <button type="submit">"Greet"</button>
+            </form>
+            <p>{ move || greet_msg.get() }</p>
+
+            <div class="row">
+                <button on:click=decrease_me>"-1"</button>
+                <button on:click=increase_me>"+1"</button>
+            </div>
+            <p class:red=move || (count() < 0) >
+                     "Count: " {count}
+            </p>
+        </main>
     }
 }

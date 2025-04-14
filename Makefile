@@ -1,13 +1,8 @@
-DATABASE_FILE=molmine.db
-DATABASE_URL=sqlite://$(DATABASE_FILE)
+DATABASE_FILE=src-tauri/src/molmine.db
+DATABASE_URL="sqlite://$(DATABASE_FILE)"
 
-build: build-backend build-frontend
-
-build-backend:
-	cargo build --features ssr
-
-build-frontend:
-	cargo build --features hydrate --target wasm32-unknown-unknown
+dev: 
+	cargo tauri dev
 
 migrate:
 	diesel migration run --database-url $(DATABASE_URL)

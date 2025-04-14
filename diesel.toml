@@ -1,5 +1,5 @@
 [print_schema]
-file = "src/schema_printed.rs"
+file = "src-tauri/src/schema_printed.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
