@@ -1,7 +1,7 @@
 pub mod keys;
 pub use keys::*;
 
-use crate::db::{AsyncConn, get_last_rowid};
+use crate::db::{get_last_rowid, AsyncConn};
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;

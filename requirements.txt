@@ -1,0 +1,4 @@
+flask-cors
+pillow
+rdkit
+decimer

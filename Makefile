@@ -16,3 +16,4 @@ delete-db:
 	rm $(DATABASE_FILE)
 
 reset-db: delete-db migrate
+

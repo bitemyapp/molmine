@@ -1,10 +1,10 @@
 use diesel::sql_types::Integer;
 use diesel::sqlite::SqliteConnection;
 use diesel::{Connection, ConnectionResult, QueryableByName};
-use diesel_async::AsyncConnection;
 use diesel_async::sync_connection_wrapper::SyncConnectionWrapper;
+use diesel_async::AsyncConnection;
 use diesel_migrations::MigrationHarness;
-use diesel_migrations::{EmbeddedMigrations, embed_migrations};
+use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 
 use crate::error::MolmineError;
 

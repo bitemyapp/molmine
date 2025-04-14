@@ -6,6 +6,8 @@ pub enum MolmineError {
     DieselConnectionError(#[from] diesel::ConnectionError),
     #[error("Error running database migrations: {0}")]
     DieselMigrationError(Box<dyn std::error::Error + Send + std::marker::Sync>),
+    #[error("Error connecting to flask server: {0}")]
+    ReqwestError(#[from] reqwest::Error),
     // #[error("Failed to parse the PDF file")]
     // PdfParseError(#[from] pdf::PdfError),
     // #[error("Failed to parse the PDF file")]

@@ -8,7 +8,8 @@ pub mod models;
 pub mod pages;
 #[cfg(feature = "ssr")]
 pub mod schema;
-
+pub mod rdkit_utils;
+pub mod flask_routes;
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
