@@ -17,6 +17,7 @@ log = "0.4.27"
 thiserror = "2.0.12"
 reqwest = "0.12.15"
 derive_more = { version="2.0.1", features=["from"] }
+rdkit-sys = "0.4.12"
 
 [workspace]
 members = ["src-tauri"]

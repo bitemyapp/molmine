@@ -7,5 +7,5 @@ pub enum MolmineError {
     #[error("Error running database migrations: {0}")]
     DieselMigrationError(Box<dyn std::error::Error + Send + std::marker::Sync>),
     #[error("Error connecting to flask server: {0}")]
-    ReqwestError(#[from] reqwest::Error),
+    ReqwestError(#[from] reqwest::Error)
 }

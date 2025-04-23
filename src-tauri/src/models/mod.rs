@@ -36,9 +36,14 @@ impl Compound {
         compounds.load::<Compound>(conn).await
     }
 
-    pub async fn delete(compound_id: CompoundId, conn: &mut AsyncConn) -> Result<usize, diesel::result::Error> {
+    pub async fn delete(
+        compound_id: CompoundId,
+        conn: &mut AsyncConn,
+    ) -> Result<usize, diesel::result::Error> {
         use crate::schema::compounds::dsl::*;
-        diesel::delete(compounds.find(compound_id)).execute(conn).await
+        diesel::delete(compounds.find(compound_id))
+            .execute(conn)
+            .await
     }
 
     pub async fn update(&self, conn: &mut AsyncConn) -> Result<Self, diesel::result::Error> {
@@ -122,7 +127,10 @@ impl Pdf {
         pdfs.load::<Pdf>(conn).await
     }
 
-    pub async fn delete(pdf_id: PdfId, conn: &mut AsyncConn) -> Result<usize, diesel::result::Error> {
+    pub async fn delete(
+        pdf_id: PdfId,
+        conn: &mut AsyncConn,
+    ) -> Result<usize, diesel::result::Error> {
         use crate::schema::pdfs::dsl::*;
         diesel::delete(pdfs.find(pdf_id)).execute(conn).await
     }
@@ -220,10 +228,10 @@ pub struct NewProject {
 impl NewProject {
     // Create NewProject from JSON fields
     pub fn with_json_fields(
-        name: String, 
-        path: String, 
-        created_at: NaiveDateTime, 
-        fields: serde_json::Value
+        name: String,
+        path: String,
+        created_at: NaiveDateTime,
+        fields: serde_json::Value,
     ) -> Self {
         Self {
             name,
