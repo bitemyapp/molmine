@@ -7,6 +7,8 @@ pub mod error;
 pub mod models;
 pub mod pages;
 #[cfg(feature = "ssr")]
+pub mod rdkit;
+#[cfg(feature = "ssr")]
 pub mod schema;
 
 #[cfg(feature = "hydrate")]
